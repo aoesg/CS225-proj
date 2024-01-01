@@ -2,7 +2,7 @@ go 1.21.5
 
 use (
 	./src/accessRedis
-	// ./src/logServer
+	./src/logServer
 	./test1_main
 )
 

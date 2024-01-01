@@ -41,7 +41,11 @@ func HttpServer(ip string, port string){
 }
 
 func log_read(c *gin.Context){
+	ip := c.Param("ip")
+	port := c.Param("port")
 	key := c.Param("key")
+
+	value := accessRedis.Get_v1(ip + ":" + port, key)
 
 }
 
