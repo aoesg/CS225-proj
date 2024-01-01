@@ -1,6 +1,12 @@
-module cs225/logLayer/accessRedis
+module cs225/logLayer/test1
 
 go 1.21.5
+
+// go get github.com/redis/go-redis/v9
+
+replace cs255/logLayer/accessRedis => ../src/accessRedis
+
+require cs255/logLayer/accessRedis v0.0.0
 
 require (
 	github.com/cespare/xxhash/v2 v2.2.0 // indirect
