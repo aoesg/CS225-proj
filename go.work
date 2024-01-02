@@ -5,3 +5,7 @@ use (
 	./src/logServer
 	./test1_main
 )
+
+replace cs255/logLayer/accessRedis v0.0.0 => ./src/accessRedis
+
+replace cs255/logLayer/logServer v0.0.0 => ./src/logServer

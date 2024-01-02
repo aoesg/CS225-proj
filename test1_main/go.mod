@@ -4,9 +4,11 @@ go 1.21.5
 
 require cs255/logLayer/accessRedis v0.0.0
 
-replace cs255/logLayer/accessRedis => ../src/accessRedis
+// replace cs255/logLayer/accessRedis => ../src/accessRedis
 
 require cs255/logLayer/logServer v0.0.0
+
+// replace cs255/logLayer/logServer => ../src/logServer
 
 require (
 	github.com/bytedance/sonic v1.9.1 // indirect
@@ -39,4 +41,4 @@ require (
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
 
-replace cs255/logLayer/logServer => ../src/logServer
+

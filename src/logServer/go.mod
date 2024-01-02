@@ -6,7 +6,7 @@ require github.com/gin-gonic/gin v1.9.1
 
 require cs255/logLayer/accessRedis v0.0.0
 
-replace cs255/logLayer/accessRedis => ../accessRedis
+// replace cs255/logLayer/accessRedis => ../accessRedis
 
 require (
 	github.com/bytedance/sonic v1.9.1 // indirect
