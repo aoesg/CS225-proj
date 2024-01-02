@@ -5,5 +5,3 @@ use (
 	./src/logServer
 	./test1_main
 )
-
-replace cs255/logLayer/accessRedis => ./src/accessRedis

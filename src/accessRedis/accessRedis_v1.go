@@ -7,7 +7,7 @@ import (
 	"github.com/redis/go-redis/v9"
 )
 
-func Set_v1(redis_address string, key string, value string) {
+func Set_v1(redis_address string, key string, value string) error {
 
 	client := redis.NewClient(&redis.Options{
 		Addr:     redis_address,
@@ -22,9 +22,11 @@ func Set_v1(redis_address string, key string, value string) {
 	checkError(err)
 
 	fmt.Printf("GET %s : %s\n", key, value)
+
+	return err
 }
 
-func Get_v1(redis_address string, key string) string {
+func Get_v1(redis_address string, key string) (string, error) {
 
 	client := redis.NewClient(&redis.Options{
 		Addr:     redis_address,
@@ -40,5 +42,5 @@ func Get_v1(redis_address string, key string) string {
 
 	fmt.Printf("SET %s : %s\n", key, value)
 
-	return value
+	return value, err
 }
