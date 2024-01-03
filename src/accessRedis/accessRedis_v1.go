@@ -11,8 +11,8 @@ func Set_v1(redis_address string, key string, value string) error {
 
 	client := redis.NewClient(&redis.Options{
 		Addr:     redis_address,
-		Password: "", // no password set
-		DB:       0,  // use default DB
+		// Password: "", // no password set
+		// DB:       0,  // use default DB
 	})
 	fmt.Println(client)
 
@@ -30,8 +30,8 @@ func Get_v1(redis_address string, key string) (string, error) {
 
 	client := redis.NewClient(&redis.Options{
 		Addr:     redis_address,
-		Password: "", // no password set
-		DB:       0,  // use default DB
+		// Password: "", // no password set
+		// DB:       0,  // use default DB
 	})
 	fmt.Println(client)
 

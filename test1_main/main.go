@@ -11,6 +11,9 @@ func main() {
 
 	redis_address := "localhost:6379"
 	accessRedis.Set_v1(redis_address, "x", "1")
+	accessRedis.Get_v1(redis_address, "y")
+	accessRedis.Get_v1(redis_address, "x")
+	accessRedis.Get_v1(redis_address, "x")
 	accessRedis.Get_v1(redis_address, "x")
 
 	logServer.Init_ids(0, []int{1})
