@@ -3,6 +3,7 @@ package logServer
 import (
 	"fmt"
 	"net/http"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 	"github.com/redis/go-redis/v9"
@@ -49,39 +50,83 @@ func HttpServer(ip string, port string) {
 
 }
 
+func resp_wzLog(c *gin.Context, value string, status int, message string) {
+	c.JSON(http.StatusServiceUnavailable, gin.H{
+		"data":    value,
+		"status":  int(status),
+		"message": message,
+	})
+}
+
 func set_handler(c *gin.Context) {
-	ip := c.Param("ip")
-	port := c.Param("port")
+	db_address := c.Param("db_address")
 	key := c.Param("key")
 	value := c.Param("value")
-	version := c.Param("version")
 	ssf_id := c.Param("ssf_id")
 	step_id := c.Param("step_id")
 
-	// Start wzLog
-
-	fmt.Printf("ssf_id=%s write (%s, ver=%s):%s at step=%s\n", ssf_id, key, version, value, step_id)
-
-	err := accessRedis.Set_v1(ip+":"+port, key, value)
+	fmt.Printf("ssf_id=%s write %s:%s in %s at step=%s\n", ssf_id, key, value, db_address, step_id)
 
 	// Start wzLog
 
-	if err != nil {
+	// get本地(db_address:key:ssf_id:step_id)
+	log_key := fmt.Sprintf("%s:%s:%s:%s", db_address, key, ssf_id, step_id)
+	value_version_string, err := accessRedis.Get_v1(local_redis_address, log_key) // get 本地
+	value_version_arr := strings.Split(value_version_string, ":")
+
+	// if 本地(db_address:key:ssf_id:step_id)存在
+	if err != redis.Nil {
+		value := value_version_arr[0]
+		version := value_version_arr[1]
+
+		if value != "" {
+			// if value 存在
+			resp_wzLog(c, "", 1, "set success")
+		} else {
+			// if 只有 version
+			db_key := fmt.Sprintf("%s:%s", key, version)
+			err = accessRedis.Set_v1(db_address, db_key, value) // set 远程db (key:version)
+			log_record := fmt.Sprintf("%s:%s", value, version)
+			err = accessRedis.Set_v1(local_redis_address, log_key, log_record) // set 本地 "value:version"
+
+			resp_wzLog(c, "", 1, "set success")
+		}
+	} else {
+		// if value&version 都不存在，本地无记录
+		db_version_key := key
+		version, _ := accessRedis.Incr_v1(db_address, db_version_key) // incr 远程db (key)
+		log_record_onlyVersion := fmt.Sprintf(":%s", version)
+		err = accessRedis.Set_v1(local_redis_address, log_key, log_record_onlyVersion) // set 本地 ":version"
+
+		db_key := fmt.Sprintf("%s:%s", key, version)
+		err = accessRedis.Set_v1(db_address, db_key, value) // set 远程db (key:version)
+		log_record := fmt.Sprintf("%s:%s", value, version)
+		err = accessRedis.Set_v1(local_redis_address, log_key, log_record) // set 本地 "value:version"
+
+		resp_wzLog(c, "", 1, "set success")
+
+	}
+
+	version, _ := accessRedis.Incr_v1(db_address, key)
+
+	if value != "" {
 		c.JSON(http.StatusServiceUnavailable, gin.H{
-			"status": "fail",
+			"value":  value,
+			"status": "success",
 		})
 	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"status": "success",
-	})
+	db_key := fmt.Sprintf("%s:%s", db_address, key, ssf_id, step_id)
+
+	err := accessRedis.Set_v1(db_address, key, value)
+
+	// Start wzLog
 }
 
 func get_handler(c *gin.Context) {
 	db_address := c.Param("db_address")
 	key := c.Param("key")
 	// value := c.Param("value")
-	// version := c.Param("version")
 	ssf_id := c.Param("ssf_id")
 	step_id := c.Param("step_id")
 

@@ -10,11 +10,11 @@ import (
 func Set_v1(redis_address string, key string, value string) error {
 
 	client := redis.NewClient(&redis.Options{
-		Addr:     redis_address,
+		Addr: redis_address,
 		// Password: "", // no password set
 		// DB:       0,  // use default DB
 	})
-	fmt.Println(client)
+	// fmt.Println(client)
 
 	ctx := context.Background()
 
@@ -29,11 +29,11 @@ func Set_v1(redis_address string, key string, value string) error {
 func Get_v1(redis_address string, key string) (string, error) {
 
 	client := redis.NewClient(&redis.Options{
-		Addr:     redis_address,
+		Addr: redis_address,
 		// Password: "", // no password set
 		// DB:       0,  // use default DB
 	})
-	fmt.Println(client)
+	// fmt.Println(client)
 
 	ctx := context.Background()
 
@@ -41,6 +41,24 @@ func Get_v1(redis_address string, key string) (string, error) {
 	checkError(err)
 
 	fmt.Printf("SET %s : %s\n", key, value)
+
+	return value, err
+}
+
+func Incr_v1(redis_address string, key string) (string, error) {
+	client := redis.NewClient(&redis.Options{
+		Addr: redis_address,
+	})
+	fmt.Println(client)
+
+	ctx := context.Background()
+
+	value_interface, err := client.Do(ctx, "INCR", key).Result()
+	checkError(err)
+
+	value := value_interface.(string)
+
+	fmt.Printf("INCR %s to %s\n", key, value)
 
 	return value, err
 }
