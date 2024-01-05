@@ -3,7 +3,8 @@ go 1.21.5
 use (
 	./src/accessRedis
 	./src/logServer
-	./test1_main
+	// ./test1_main
+	./wzConfig_main
 )
 
 replace cs255/logLayer/accessRedis v0.0.0 => ./src/accessRedis

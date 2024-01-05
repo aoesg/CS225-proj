@@ -1,0 +1,10 @@
+{
+    "httpIP": "localhost",
+    "httpPort": "8080",
+
+    "local_redis_address": "localhost:6379",
+
+    "log_id": 0,
+    "replica_ids": [1]
+    
+}
