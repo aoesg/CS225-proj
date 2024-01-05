@@ -48,6 +48,10 @@ func HttpServer(ip string, port string) {
 	router.GET("/read", get_handler)
 	router.GET("/clear", clear_handler)
 
+	router.POST("/write", set_handler)
+	router.POST("/read", get_handler)
+	router.POST("/clear", clear_handler)
+
 	// 默认在 8080 端口启动服务，除非定义了一个 PORT 的环境变量。
 	router.Run(ip + ":" + port)
 	// router.Run(":3000") hardcode 端口号
@@ -63,11 +67,11 @@ func resp_wzLog(c *gin.Context, value string, status int, message string) {
 }
 
 func set_handler(c *gin.Context) {
-	db_address := c.Param("db_address")
-	key := c.Param("key")
-	value := c.Param("value")
-	ssf_id := c.Param("ssf_id")
-	step_id := c.Param("step_id")
+	db_address := c.Query("db_address")
+	key := c.Query("key")
+	value := c.Query("value")
+	ssf_id := c.Query("ssf_id")
+	step_id := c.Query("step_id")
 
 	if db_address == "" ||
 		key == "" ||
@@ -107,7 +111,7 @@ func set_handler(c *gin.Context) {
 			return
 		}
 	} else {
-		// if value&version 都不存在，本地无记录
+		// if value和version 都不存在，本地无记录
 		db_version_key := key
 		version, _ := accessRedis.Incr_v1(db_address, db_version_key) // incr 远程db (key)
 		log_record_onlyVersion := fmt.Sprintf(":%s", version)
@@ -125,11 +129,11 @@ func set_handler(c *gin.Context) {
 }
 
 func get_handler(c *gin.Context) {
-	db_address := c.Param("db_address")
-	key := c.Param("key")
+	db_address := c.Query("db_address")
+	key := c.Query("key")
 	// value := c.Param("value")
-	ssf_id := c.Param("ssf_id")
-	step_id := c.Param("step_id")
+	ssf_id := c.Query("ssf_id")
+	step_id := c.Query("step_id")
 
 	if db_address == "" ||
 		key == "" ||
@@ -153,7 +157,7 @@ func get_handler(c *gin.Context) {
 	if err != redis.Nil {
 		value := value_version_arr[0]
 
-		resp_wzLog(c, value, 1, "set success")
+		resp_wzLog(c, value, 1, "get success")
 	} else {
 		// if 本地(db_address:key:ssf_id:step_id) 为空
 		db_version_key := key
@@ -161,7 +165,7 @@ func get_handler(c *gin.Context) {
 
 		if err == redis.Nil {
 			// if 远程db 没有key的version
-			resp_wzLog(c, "", 1, "get success, but notExisted")
+			resp_wzLog(c, "", 1, "get notExisted")
 			return
 		}
 
@@ -184,7 +188,7 @@ func get_handler(c *gin.Context) {
 
 			if version_int == 0 {
 				// if 远程db 没有存在的version（减到0都不存在）
-				resp_wzLog(c, "", 1, "get success, but notExisted")
+				resp_wzLog(c, "", 1, "get notExisted")
 				return
 			}
 		}
@@ -193,9 +197,18 @@ func get_handler(c *gin.Context) {
 }
 
 func clear_handler(c *gin.Context) {
-	ssf_id := c.Param("ssf_id")
+	ssf_id := c.Query("ssf_id")
 
-	ssf2clear = append(ssf2clear, ssf_id)
+	if ssf_id == "" {
+		resp_wzLog(c, "", -1, "clear fail, param invalid")
+		return
+	}
+
+	// ssf2clear = append(ssf2clear, ssf_id)
+	pattern := fmt.Sprintf("*:*:*:%s:*", ssf_id)
+	delCount, _ := accessRedis.DelPattern(local_redis_address, pattern)
+
+	fmt.Printf("DEL %d record(s) for ssf_id=%s\n", delCount, ssf_id)
 
 	resp_wzLog(c, "", 1, "clear success")
 }

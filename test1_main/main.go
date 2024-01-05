@@ -9,14 +9,12 @@ import (
 func main() {
 	fmt.Println("It's my GO!!")
 
-	redis_address := "localhost:6379"
-	accessRedis.Set_v1(redis_address, "x", "1")
-	accessRedis.Get_v1(redis_address, "y")
-	accessRedis.Get_v1(redis_address, "x")
-	accessRedis.Get_v1(redis_address, "x")
-	accessRedis.Get_v1(redis_address, "x")
+	version, _ := accessRedis.Incr_v1("localhost:50000", "test_count")
+	fmt.Println("test_count:", version)
 
 	logServer.Init_ids(0, []int{1})
+	logServer.Init_local_redis("localhost:6379")
+
 	logServer.HttpServer("localhost", "8080")
 
 }
