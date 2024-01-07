@@ -1,2 +1,3 @@
 *.rdb
+redis_confs/*.rdb
 wzConfig_main/config.json
