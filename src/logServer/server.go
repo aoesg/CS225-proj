@@ -98,7 +98,7 @@ func set_handler(c *gin.Context) {
 
 		if value != "" {
 			// if value 存在
-			resp_wzLog(c, "", 1, "set success")
+			resp_wzLog(c, value, 1, "set success")
 			return
 		} else {
 			// if 只有 version
@@ -107,7 +107,7 @@ func set_handler(c *gin.Context) {
 			log_record := fmt.Sprintf("%s:%s", value, version)
 			_ = accessRedis.Set_v1(local_redis_address, log_key, log_record) // set 本地 "value:version"
 
-			resp_wzLog(c, "", 1, "set success")
+			resp_wzLog(c, value, 1, "set success")
 			return
 		}
 	} else {
@@ -122,7 +122,7 @@ func set_handler(c *gin.Context) {
 		log_record := fmt.Sprintf("%s:%s", value, version)
 		_ = accessRedis.Set_v1(local_redis_address, log_key, log_record) // set 本地 "value:version"
 
-		resp_wzLog(c, "", 1, "set success")
+		resp_wzLog(c, value, 1, "set success")
 		return
 	}
 	// End set wzLog
