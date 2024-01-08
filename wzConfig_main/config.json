@@ -2,9 +2,10 @@
     "httpIP": "localhost",
     "httpPort": "8080",
 
-    "local_redis_address": "localhost:6379",
+    "local_redis_address": "localhost:50000",
 
-    "log_id": 0,
+    "local_log_id": 0,
+    "logNodes_address": ["localhost:8080", "localhost:8080"],
     "replica_ids": [1]
     
 }

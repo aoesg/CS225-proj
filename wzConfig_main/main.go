@@ -14,7 +14,8 @@ type Config_param struct {
 	HttpIP              string `json:"httpIP"`
 	HttpPort            string `json:"httpPort"`
 	Local_redis_address string `json:"local_redis_address"`
-	Log_id              int    `json:"log_id"`
+	Local_log_id        int    `json:"local_log_id"`
+	LogNodes_address         []string  `json:"logNodes_address"`
 	Replica_ids         []int  `json:"replica_ids"`
 }
 
@@ -40,7 +41,7 @@ func main() {
 		panic("无法解析config文件")
 	}
 
-	logServer.Init_ids(config.Log_id, config.Replica_ids)
+	logServer.Init_log_info(config.Local_log_id, config.LogNodes_address, config.Replica_ids)
 	logServer.Init_local_redis(config.Local_redis_address)
 
 	logServer.HttpServer(config.HttpIP, config.HttpPort)
