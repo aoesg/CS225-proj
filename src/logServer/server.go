@@ -15,10 +15,12 @@ import (
 var ssf2clear []string
 
 var logNode_id int
+var logNodes_address []string
 var replica_id_slice []int
 
-func Init_ids(input_logNode_id int, input_replica_id_slice []int) {
+func Init_log_info(input_logNode_id int, input_logNodes_address []string, input_replica_id_slice []int) {
 	logNode_id = input_logNode_id
+	logNodes_address = input_logNodes_address
 	replica_id_slice = input_replica_id_slice
 }
 
@@ -156,8 +158,13 @@ func get_handler(c *gin.Context) {
 	// if 本地(db_address:key:ssf_id:step_id) 存在
 	if err != redis.Nil {
 		value := value_version_arr[0]
-
-		resp_wzLog(c, value, 1, "get success")
+		if value == "" {
+			resp_wzLog(c, "", 1, "get notExisted")
+			return
+		} else {
+			resp_wzLog(c, value, 1, "get success")
+			return
+		}
 	} else {
 		// if 本地(db_address:key:ssf_id:step_id) 为空
 		db_version_key := key
@@ -165,6 +172,7 @@ func get_handler(c *gin.Context) {
 
 		if err == redis.Nil {
 			// if 远程db 没有key的version
+			_ = accessRedis.Set_v1(local_redis_address, log_key, ":") // set 本地 "value:version"
 			resp_wzLog(c, "", 1, "get notExisted")
 			return
 		}
