@@ -61,7 +61,7 @@ func HttpServer(ip string, port string) {
 }
 
 func resp_wzLog(c *gin.Context, value string, status int, message string) {
-	c.JSON(http.StatusServiceUnavailable, gin.H{
+	c.JSON(http.StatusOK, gin.H{
 		"data":    value,
 		"status":  int(status),
 		"message": message,
