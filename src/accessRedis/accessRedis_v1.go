@@ -76,6 +76,10 @@ func DelPattern(redis_address string, pattern string) (int64, error) {
 	keys, err := client.Keys(ctx, pattern).Result()
 	checkError(err)
 
+	if len(keys) == 0 {
+		return 0, err
+	}
+
 	// keys_inOneStr := strings.Join(keys, " ")
 
 	delCount, err := client.Del(ctx, keys[:]...).Result() // 新知识新知识
