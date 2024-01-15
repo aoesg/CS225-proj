@@ -60,10 +60,18 @@ Example
     
 }
 ```
+For the case above, set up local redis DB
+```
+redis-server -p 50000 --protected-mode no
+// -p 用于指定绑定的端口；--protected-mode no 关闭protected模式，使得该db可以远程访问
+```
 
 启动log server
 ```
 cd wzConfig_main
 go run .
 ```
+关闭log server
+
+ctrl + c
 
